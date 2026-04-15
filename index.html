@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>KayStay | Institutional-Grade Asset Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Firebase SDK - Institutional Grade Lead Capture -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      // Firebase Configuration: System environment injection or placeholder
+      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        apiKey: "YOUR_FIREBASE_API_KEY",
+        authDomain: "kaystay-prod.firebaseapp.com",
+        projectId: "kaystay-prod",
+        storageBucket: "kaystay-prod.appspot.com",
+        messagingSenderId: "0000000000",
+        appId: "1:0000000000:web:abc123"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'kaystay-v2026';
+
+      window.fb = { db, auth, appId, collection, addDoc, serverTimestamp };
+
+      // Secure Anonymous Access for Lead Generation Compliance
+      (async () => {
+        try { await signInAnonymously(auth); } 
+        catch (e) { console.warn("Firebase Auth bypassed for local development."); }
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f9faf8', 100: '#f0f3ee', 200: '#e1e7de',
+                            800: '#5e6360', 900: '#343836',
+                            accent: '#7a8c66', accentHover: '#6a7a58'
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9faf8; -webkit-font-smoothing: antialiased; }
+        .chart-container { position: relative; width: 100%; height: 260px; }
+        .bento-card { background: #ffffff; border: 1px solid #e1e7de; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .bento-card:hover { border-color: #7a8c66; transform: translateY(-4px); box-shadow: 0 12px 30px -10px rgba(0,0,0,0.1); }
+        #mobile-menu { transition: all 0.3s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
+        #mobile-menu.open { max-height: 500px; opacity: 1; }
+        .sticky-col { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 1px solid #f0f3ee; }
+        .fluid-heading { font-size: clamp(2.25rem, 8vw, 4rem); line-height: 1.05; }
+        .ai-gradient { background: linear-gradient(145deg, #ffffff 0%, #f0f3ee 100%); border: 1px solid rgba(122, 140, 102, 0.15); }
+        .loading-spinner { border: 3px solid rgba(122, 140, 102, 0.1); border-top: 3px solid #7a8c66; border-radius: 50%; width: 28px; height: 28px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #e1e7de; border-radius: 10px; }
+        .matrix-scroll::-webkit-scrollbar { height: 4px; }
+    </style>
+</head>
+<body class="text-brand-900 overflow-x-hidden">
+
+<nav class="fixed w-full z-[100] bg-white/90 backdrop-blur-xl border-b border-brand-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="flex justify-between items-center h-16 md:h-20">
+            <div class="flex items-center">
+                <img src="logo.png" alt="KayStay Logo" class="h-9 md:h-11 w-auto object-contain" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-2xl font-black text-brand-900 tracking-tighter uppercase\'>KayStay</span>';">
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-10 text-[13px] font-bold uppercase tracking-widest text-brand-800">
+                <a href="#ai-advisor" class="hover:text-brand-accent transition-colors">✨ AI Yield Audit</a>
+                <a href="#track-record" class="hover:text-brand-accent transition-colors">Performance Data</a>
+                <a href="#plans" class="hover:text-brand-accent transition-colors">Execution Tiers</a>
+                <a href="#plans" class="bg-brand-900 text-white px-6 py-2.5 rounded-full hover:bg-brand-accent transition-all shadow-sm">Partner Now</a>
+            </div>
+
+            <div class="md:hidden">
+                <button class="text-brand-accent p-2 focus:outline-none" onclick="document.getElementById('mobile-menu').classList.toggle('open')">
+                    <div class="w-6 h-0.5 bg-brand-accent mb-1.5 transition-all"></div>
+                    <div class="w-6 h-0.5 bg-brand-accent mb-1.5 transition-all"></div>
+                    <div class="w-6 h-0.5 bg-brand-accent transition-all"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden bg-white border-b border-brand-200 px-6 py-8 flex flex-col space-y-4 text-sm font-bold uppercase tracking-widest text-brand-800">
+        <a href="#ai-advisor" class="text-brand-accent" onclick="document.getElementById('mobile-menu').classList.remove('open')">✨ AI Yield Audit</a>
+        <a href="#track-record" onclick="document.getElementById('mobile-menu').classList.remove('open')">Performance Data</a>
+        <a href="#plans" onclick="document.getElementById('mobile-menu').classList.remove('open')">Execution Tiers</a>
+        <a href="#plans" class="bg-brand-accent text-white p-3 rounded-full text-center shadow-lg" onclick="document.getElementById('mobile-menu').classList.remove('open')">Partner Now</a>
+    </div>
+</nav>
+
+<main class="pt-16 md:pt-20">
+    <!-- Hero Section -->
+    <section class="py-20 md:py-32 px-4 text-center bg-white">
+        <div class="max-w-5xl mx-auto">
+            <span class="inline-block px-4 py-1.5 rounded-full border border-brand-accent/20 text-brand-accent text-[10px] font-black uppercase tracking-[0.3em] mb-8 bg-brand-accent/5">
+                Institutional-Grade Hospitality Management
+            </span>
+            <h1 class="fluid-heading font-extrabold text-brand-900 tracking-tighter mb-8">
+                Your home. <br/> <span class="text-brand-accent italic">Managed beautifully.</span>
+            </h1>
+            <p class="text-base md:text-xl text-brand-800 font-light max-w-2xl mx-auto mb-12 leading-relaxed opacity-80 px-6">
+                Transform active real estate into a passive, high-yield asset class. We automate global distribution, maximize Net Operating Income (NOI), and transfer operational liability to our verified network.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 px-6">
+                <a href="#plans" class="w-full sm:w-auto bg-brand-accent text-white px-10 py-5 rounded-full font-bold hover:bg-brand-accentHover shadow-2xl transition-all text-lg">View Financial Plans</a>
+                <a href="#ai-advisor" class="w-full sm:w-auto text-brand-accent border border-brand-accent px-10 py-5 rounded-full font-bold hover:bg-brand-50 transition-all text-center uppercase text-sm tracking-widest">✨ Free Yield Audit</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI ADVISOR ENGINE -->
+    <section id="ai-advisor" class="py-20 px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto scroll-mt-24">
+        <div class="ai-gradient rounded-[3rem] p-8 md:p-16 shadow-sm border border-brand-100">
+            <div class="mb-14 text-center">
+                <h2 class="text-3xl md:text-5xl font-extrabold text-brand-900 mb-4 tracking-tighter uppercase">✨ Asset Performance Audit</h2>
+                <p class="text-brand-800 font-light max-w-2xl mx-auto text-sm md:text-lg opacity-80">Instant institutional revenue projection powered by Gemini AI and Vietnam market nodes.</p>
+                <div id="ai-quota-text" class="mt-6 text-[10px] font-black text-brand-accent uppercase tracking-[0.2em]">Status: 3 free audits remaining today</div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div class="space-y-8 bg-white p-8 md:p-10 rounded-[2rem] border border-brand-100 shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-brand-800 mb-3 tracking-widest">Asset Location</label>
+                            <input id="ai-location" type="text" placeholder="e.g. District 1, HCMC" class="w-full border border-brand-200 rounded-xl px-4 py-4 text-sm focus:border-brand-accent outline-none bg-brand-50/30">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-brand-800 mb-3 tracking-widest">Unit Category</label>
+                            <select id="ai-type" class="w-full border border-brand-200 rounded-xl px-4 py-4 text-sm focus:border-brand-accent outline-none bg-brand-50/30 appearance-none">
+                                <option value="Studio">Studio</option>
+                                <option value="1 Bedroom">1 Bedroom</option>
+                                <option value="2 Bedrooms">2 Bedrooms</option>
+                                <option value="3+ Bedrooms">Penthouse / Villa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-brand-800 mb-3 tracking-widest">Owner Contact (Phone/Email)</label>
+                        <input id="ai-contact" type="text" placeholder="Required for lead verification" class="w-full border border-brand-200 rounded-xl px-4 py-4 text-sm focus:border-brand-accent outline-none bg-brand-50/30">
+                    </div>
+                    <button onclick="handleAIDispatch()" id="ai-btn" class="w-full bg-brand-accent text-white py-5 rounded-2xl font-bold hover:bg-brand-accentHover transition-all shadow-xl text-lg uppercase tracking-tight">
+                        ✨ Generate Performance Report
+                    </button>
+                </div>
+
+                <div id="ai-result-container" class="bg-brand-900 text-white rounded-[2rem] p-10 min-h-[450px] relative hidden overflow-hidden shadow-2xl">
+                    <div id="ai-loading" class="absolute inset-0 bg-brand-900/95 z-10 flex flex-col items-center justify-center space-y-6 hidden">
+                        <div class="loading-spinner"></div>
+                        <p class="text-[10px] font-bold text-brand-accent animate-pulse uppercase tracking-[0.4em]">Syncing Market Data...</p>
+                    </div>
+                    <div class="prose prose-invert prose-sm leading-relaxed font-light" id="ai-result-content"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DATA VALIDATION -->
+    <section id="track-record" class="py-20 md:py-32 px-4 bg-brand-100/30 border-y border-brand-200 text-center">
+        <h2 class="text-3xl md:text-5xl font-extrabold text-brand-900 mb-4 tracking-tighter uppercase">Yield Validation</h2>
+        <p class="text-brand-800 font-light mb-16 opacity-60">Securing liquidity and optimizing Net RevPAR via multi-channel acquisition.</p>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
+            <div class="bg-white p-10 rounded-[3rem] border border-brand-200 shadow-sm">
+                <h3 class="text-xs font-black mb-10 text-brand-800 uppercase tracking-widest text-center">Relative Revenue Alpha</h3>
+                <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+            </div>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="bg-white p-8 rounded-3xl border border-brand-200 text-center shadow-sm">
+                    <div class="text-4xl font-extrabold text-brand-accent mb-2">4.9/5</div>
+                    <div class="text-[9px] uppercase font-bold text-brand-800 opacity-50 tracking-widest">Guest Index</div>
+                    <div class="h-20 mt-4"><canvas id="ratingChart"></canvas></div>
+                </div>
+                <div class="bg-brand-900 text-white p-8 rounded-3xl text-center shadow-xl flex flex-col justify-center">
+                    <div class="text-4xl font-extrabold text-brand-accent mb-2">120+</div>
+                    <div class="text-[9px] uppercase font-bold tracking-widest opacity-40">B2B Corporate Partners</div>
+                </div>
+                <div class="bg-white p-8 rounded-3xl border border-brand-200 text-center shadow-sm flex flex-col justify-center">
+                    <div class="text-4xl font-extrabold text-brand-900 mb-1">500+</div>
+                    <div class="text-[9px] uppercase font-bold tracking-widest opacity-40">Managed Units</div>
+                </div>
+                <div class="bg-white p-8 rounded-3xl border border-brand-200 text-center shadow-sm flex flex-col justify-center">
+                    <div class="text-4xl font-extrabold text-brand-900 mb-1">99.8%</div>
+                    <div class="text-[9px] uppercase font-bold tracking-widest opacity-40">O&M Reliability</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLANS -->
+    <section id="plans" class="py-20 md:py-32 px-4 max-w-7xl mx-auto scroll-mt-24">
+        <h2 class="text-3xl md:text-5xl font-extrabold text-brand-900 mb-16 tracking-tighter uppercase text-center">Execution Tiers</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- T01 -->
+            <div class="bento-card p-8 rounded-[2.5rem] cursor-pointer" data-tier="1" onclick="selectTier(1)">
+                <div class="text-[9px] font-black uppercase text-brand-800 mb-4 opacity-30 tracking-widest">T01 Legacy</div>
+                <h3 class="text-xl font-bold mb-1">Fixed Lease</h3>
+                <div class="text-2xl font-black text-brand-accent mb-6 italic">FIXED RENT</div>
+                <p class="text-[10px] text-brand-800 font-light opacity-70 mb-6">Conventional master lease. Stable income, zero market participation or upside potential.</p>
+                <div class="text-[9px] font-bold uppercase text-red-500 py-2 border-t border-brand-100 text-center">Owner Operations</div>
+            </div>
+            <!-- T02 -->
+            <div class="bento-card p-8 rounded-[2.5rem] cursor-pointer border-brand-accent" data-tier="2" onclick="selectTier(2)">
+                <div class="text-[9px] font-black uppercase text-brand-800 mb-4 opacity-30 tracking-widest">T02 Distribution</div>
+                <h3 class="text-xl font-bold mb-1">The Engine</h3>
+                <div class="text-2xl font-black text-brand-accent mb-6 italic">5.0% GROSS</div>
+                <p class="text-[10px] text-brand-800 font-light opacity-70 mb-6">Tech distribution core. CMS, OTA sync, Dynamic pricing. Owners handle physical O&M.</p>
+                <div class="text-[9px] font-bold uppercase text-brand-accent py-2 border-t border-brand-100 text-center">Hybrid OS</div>
+            </div>
+            <!-- T03 -->
+            <div class="bg-brand-accent p-8 rounded-[2.5rem] cursor-pointer text-white shadow-2xl relative md:transform md:-translate-y-6" data-tier="3" onclick="selectTier(3)">
+                <div class="absolute -top-3 right-8 bg-brand-900 text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase shadow-lg tracking-widest">Most Popular</div>
+                <div class="text-[9px] font-black uppercase mb-4 opacity-60 tracking-widest">T03 Turnkey</div>
+                <h3 class="text-xl font-bold mb-1">The Master</h3>
+                <div class="text-2xl font-black mb-6 italic">20.0% GROSS</div>
+                <p class="text-[10px] text-white font-light opacity-90 mb-6">100% automated touchpoint management. Global concierge, auto dispatch, clearing house.</p>
+                <div class="text-[9px] font-bold uppercase py-2 border-t border-white/20 text-center">Passive Asset</div>
+            </div>
+            <!-- T04 -->
+            <div class="bg-brand-900 p-8 rounded-[2.5rem] cursor-pointer text-white shadow-xl" data-tier="4" onclick="selectTier(4)">
+                <div class="text-[9px] font-black uppercase text-brand-accent mb-4 opacity-50 tracking-widest">T04 Hedging</div>
+                <h3 class="text-xl font-bold mb-1">The Shield</h3>
+                <div class="text-2xl font-black text-brand-accent mb-6 italic">25.0% GROSS</div>
+                <p class="text-[10px] text-brand-100 font-light opacity-60 mb-6">Financial derivative tool. Baseline revenue guarantee, deficit compensation, retained upside.</p>
+                <div class="text-[9px] font-bold uppercase text-brand-accent py-2 border-t border-white/10 text-center">Protected Yield</div>
+            </div>
+        </div>
+
+        <div class="mt-16 overflow-hidden bg-white rounded-3xl border border-brand-200 shadow-sm">
+            <div class="overflow-x-auto matrix-scroll">
+                <table class="w-full text-left border-collapse text-xs md:text-sm">
+                    <thead class="bg-brand-50 border-b border-brand-200">
+                        <tr>
+                            <th class="px-8 py-8 font-black text-brand-900 sticky-col min-w-[180px] uppercase tracking-widest">Feature Matrix</th>
+                            <th class="px-8 py-8 text-center col-tier-1 transition-all opacity-40">Legacy</th>
+                            <th class="px-8 py-8 text-center col-tier-2 transition-all opacity-40">Engine</th>
+                            <th class="px-8 py-8 text-center bg-brand-accent/5 font-black text-brand-accent">Master</th>
+                            <th class="px-8 py-8 text-center col-tier-4 transition-all opacity-40">Shield</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrix-body" class="divide-y divide-brand-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-brand-900 text-brand-100 py-24 px-6 border-t border-brand-800">
+        <div class="max-w-7xl mx-auto text-center md:text-left flex flex-col md:flex-row justify-between">
+            <div>
+                <p class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">KayStay Company Limited</p>
+                <p class="text-[10px] font-light opacity-50 tracking-[0.2em] uppercase">Tax ID: 0319501868 • HCMC, Vietnam</p>
+            </div>
+            <div class="mt-10 md:mt-0 flex flex-col items-center md:items-end">
+                <a href="mailto:invest@kaystay.com" class="text-xl font-bold text-white hover:text-brand-accent transition-colors">invest@kaystay.com</a>
+                <p class="text-[10px] font-bold opacity-30 tracking-[0.5em] uppercase mt-6">© 2026 Institutional Hospitality Management</p>
+            </div>
+        </div>
+    </footer>
+</main>
+
+<script>
+    const apiKey = ""; // Integrate Gemini API Key for Production
+    const model = "gemini-2.5-flash-preview-09-2025";
+    const MAX_FREE_CALLS = 3;
+
+    function checkQuota() {
+        const quotaText = document.getElementById('ai-quota-text');
+        const aiBtn = document.getElementById('ai-btn');
+        const now = new Date().getTime();
+        const storedData = JSON.parse(localStorage.getItem('kaystay_quota') || '{"count":0, "startTime":0}');
+        if (storedData.startTime !== 0 && (now - storedData.startTime) > 24 * 60 * 60 * 1000) {
+            storedData.count = 0; storedData.startTime = 0;
+        }
+        const remaining = MAX_FREE_CALLS - storedData.count;
+        if (remaining <= 0) {
+            quotaText.innerText = "Daily limit reached. Returns in 24h.";
+            quotaText.className = "mt-6 text-[10px] font-black text-red-500 uppercase tracking-widest";
+            aiBtn.disabled = true;
+            aiBtn.className = "w-full bg-gray-400 text-white py-5 rounded-2xl font-bold cursor-not-allowed opacity-50";
+            return false;
+        }
+        quotaText.innerText = `Status: ${remaining} free audits remaining today`;
+        return true;
+    }
+
+    function recordUsage() {
+        const now = new Date().getTime();
+        let data = JSON.parse(localStorage.getItem('kaystay_quota') || '{"count":0, "startTime":0}');
+        if (data.count === 0) data.startTime = now;
+        data.count += 1;
+        localStorage.setItem('kaystay_quota', JSON.stringify(data));
+        checkQuota();
+    }
+
+    async function syncToFirebase(payload) {
+        if (!window.fb || !window.fb.auth.currentUser) return;
+        try {
+            const colRef = window.fb.collection(window.fb.db, 'artifacts', window.fb.appId, 'public', 'data', 'leads');
+            await window.fb.addDoc(colRef, { ...payload, timestamp: window.fb.serverTimestamp(), userId: window.fb.auth.currentUser.uid });
+        } catch (e) { console.error("Cloud Sync Bypassed", e); }
+    }
+
+    function handleAIDispatch() {
+        const loc = document.getElementById('ai-location').value;
+        const contact = document.getElementById('ai-contact').value;
+        if (!loc || !contact) { alert("Institutional validation requires Asset Location and Contact Node."); return; }
+        if (apiKey === "") { executeMockAI(); } else { generateRealAIAdvice(); }
+    }
+
+    function executeMockAI() {
+        const loc = document.getElementById('ai-location').value;
+        const type = document.getElementById('ai-type').value;
+        const container = document.getElementById('ai-result-container');
+        const content = document.getElementById('ai-result-content');
+        const loading = document.getElementById('ai-loading');
+        
+        container.classList.remove('hidden');
+        loading.classList.remove('hidden');
+
+        setTimeout(() => {
+            loading.classList.add('hidden');
+            content.innerHTML = `
+                <h3 class="text-brand-accent text-xl font-black mb-6 uppercase tracking-tight">Institutional Yield Audit: ${loc}</h3>
+                <p class="opacity-80 mb-6">Simulation Node Active for ${type} asset class:</p>
+                <ul class="space-y-4">
+                    <li><strong class="text-brand-accent uppercase text-[10px] tracking-widest block mb-1">01_Revenue Alpha</strong> Projected Net RevPAR growth: +35% vs baseline fixed lease structures.</li>
+                    <li><strong class="text-brand-accent uppercase text-[10px] tracking-widest block mb-1">02_Strategy Deployment</strong> Recommend immediate integration of smart-access nodes and standardization of interior textiles to capture B2B premium elasticity.</li>
+                    <li><strong class="text-brand-accent uppercase text-[10px] tracking-widest block mb-1">03_Lead Sync Executed</strong> Analytics node captured. KayStay PE specialists will contact via ${document.getElementById('ai-contact').value}.</li>
+                </ul>
+            `;
+            recordUsage();
+        }, 1500);
+    }
+
+    async function generateRealAIAdvice() {
+        if (!checkQuota()) return;
+        const loc = document.getElementById('ai-location').value;
+        const type = document.getElementById('ai-type').value;
+        const contact = document.getElementById('ai-contact').value;
+        const container = document.getElementById('ai-result-container');
+        const content = document.getElementById('ai-result-content');
+        const loading = document.getElementById('ai-loading');
+        const btn = document.getElementById('ai-btn');
+
+        container.classList.remove('hidden');
+        loading.classList.remove('hidden');
+        btn.disabled = true;
+
+        const prompt = `Perform institutional yield audit for ${type} asset in ${loc}. Persona: KayStay PE specialist. Output: HTML (h3, p, ul, li). Language: English. Include: 1. Net Operating Income (NOI) optimization forecast, 2. Three B2B-grade interior value-adds, 3. Concierge script. Be dense and direct.`;
+
+        try {
+            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await resp.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Market Data Latency.";
+            content.innerHTML = text.replace(/```html|```/g, '');
+            await syncToFirebase({ location: loc, type: type, contact: contact, report: text });
+            recordUsage();
+        } catch (e) {
+            content.innerHTML = `<p class="text-red-400">Node Sync Error.</p>`;
+        } finally {
+            loading.classList.add('hidden');
+            btn.disabled = false;
+        }
+    }
+
+    const matrixData = [
+        { name: "Proprietary CMS & Direct Booking", t1: "●", t2: "●", t3: "●", t4: "●" },
+        { name: "Global OTA Distribution (50+)", t1: "●", t2: "●", t3: "●", t4: "●" },
+        { name: "Dynamic Pricing", t1: "●", t2: "●", t3: "●", t4: "●" },
+        { name: "B2B Corporate Clients", t1: "○", t2: "○", t3: "●", t4: "●" },
+        { name: "24/7 Multilingual CS", t1: "○", t2: "○", t3: "●", t4: "●" },
+        { name: "Automated Vendor Dispatch", t1: "○", t2: "○", t3: "●", t4: "●" },
+        { name: "Clearing House & OPEX Audit", t1: "○", t2: "○", t3: "●", t4: "●" },
+        { name: "Compliant VAT Invoicing", t1: "○", t2: "○", t3: "●", t4: "●" },
+        { name: "Baseline Revenue Guarantee", t1: "100% Fixed", t2: "○", t3: "○", t4: "●" },
+        { name: "Deficit Compensation", t1: "●", t2: "○", t3: "○", t4: "●" },
+        { name: "Retained Upside", t1: "○", t2: "●", t3: "●", t4: "●" },
+        { name: "Management Style", t1: "Hands-off", t2: "Active", t3: "Passive", t4: "Protected" }
+    ];
+
+    function renderMatrix(selected = 3) {
+        const tbody = document.getElementById('matrix-body');
+        tbody.innerHTML = '';
+        matrixData.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-brand-50/50 transition-colors";
+            let html = `<td class="px-8 py-5 font-bold text-brand-900 bg-white sticky-col min-w-[200px]">${row.name}</td>`;
+            for(let i=1; i<=4; i++) {
+                const val = row[`t${i}`];
+                const active = selected === i;
+                const color = (val === '●' || val === 'Active' || val === 'Passive' || val === 'Protected' || val === 'Hands-off' || val === '100% Fixed') ? 'text-brand-accent font-black' : (val === '○' ? 'text-slate-300' : 'text-brand-800');
+                html += `<td class="px-8 py-5 text-center ${active ? 'bg-brand-accent/5 font-black' : 'opacity-60'} ${color}">${val}</td>`;
+            }
+            tr.innerHTML = html;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function selectTier(n) {
+        document.querySelectorAll('[data-tier]').forEach(c => {
+            const t = parseInt(c.dataset.tier);
+            if(t === n) { c.classList.add('border-brand-accent','ring-1','ring-brand-accent'); c.classList.remove('opacity-40'); }
+            else { c.classList.remove('border-brand-accent','ring-1','ring-brand-accent'); c.classList.add('opacity-40'); }
+        });
+        renderMatrix(n);
+    }
+
+    function initCharts() {
+        Chart.defaults.font.family = 'Inter';
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'bar',
+            data: { labels: ['Legacy Lease', 'KayStay Master'], datasets: [{ data: [100, 135], backgroundColor: ['#e1e7de', '#7a8c66'], borderRadius: 12 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+        });
+        new Chart(document.getElementById('ratingChart'), {
+            type: 'doughnut',
+            data: { datasets: [{ data: [4.9, 0.1], backgroundColor: ['#7a8c66', '#f0f3ee'], borderWidth: 0, cutout: '85%' }] },
+            options: { responsive: true, maintainAspectRatio: false, rotation: -90, circumference: 180, plugins: { tooltip: { enabled: false } } }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { renderMatrix(); initCharts(); checkQuota(); });
+</script>
+</body>
+</html>
