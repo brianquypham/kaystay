@@ -262,15 +262,23 @@
         </div>
     </section>
 
-    <footer class="bg-brand-900 text-brand-100 py-24 px-6 border-t border-brand-800">
-        <div class="max-w-7xl mx-auto text-center md:text-left flex flex-col md:flex-row justify-between">
+    <footer class="bg-white text-brand-900 py-16 md:py-24 px-6 border-t border-brand-200">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-start space-y-10 md:space-y-0 text-center md:text-left">
             <div>
-                <p class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">KayStay Company Limited</p>
-                <p class="text-[10px] font-light opacity-50 tracking-[0.2em] uppercase">Tax ID: 0319501868 • HCMC, Vietnam</p>
+                <div class="flex items-center justify-center md:justify-start mb-6">
+                    <img src="logo.png" alt="KayStay Logo" class="h-8 md:h-10 opacity-80" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-2xl font-black text-brand-900 tracking-tighter uppercase\'>KayStay</span>';">
+                </div>
+                <p class="text-lg md:text-xl font-black text-brand-900 mb-2 tracking-tighter uppercase">KayStay Company Limited</p>
+                <p class="text-[10px] font-bold text-brand-800 opacity-50 tracking-[0.2em] uppercase">Tax ID: 0319501868 • HCMC, Vietnam</p>
             </div>
-            <div class="mt-10 md:mt-0 flex flex-col items-center md:items-end">
-                <a href="mailto:invest@kaystay.com" class="text-xl font-bold text-white hover:text-brand-accent transition-colors">invest@kaystay.com</a>
-                <p class="text-[10px] font-bold opacity-30 tracking-[0.5em] uppercase mt-6">© 2026 Institutional Hospitality Management</p>
+            <div class="flex flex-col items-center md:items-end">
+                <a href="mailto:invest@kaystay.com" class="text-xl md:text-2xl font-bold text-brand-900 hover:text-brand-accent transition-colors">invest@kaystay.com</a>
+                <div class="flex space-x-6 mt-6 mb-8 text-[11px] font-bold uppercase tracking-widest text-brand-800">
+                    <a href="#ai-advisor" class="hover:text-brand-accent transition-colors">Yield Audit</a>
+                    <a href="#track-record" class="hover:text-brand-accent transition-colors">Data</a>
+                    <a href="#plans" class="hover:text-brand-accent transition-colors">Tiers</a>
+                </div>
+                <p class="text-[9px] font-bold text-brand-800 opacity-40 tracking-[0.4em] uppercase">© 2026 Institutional Hospitality Management</p>
             </div>
         </div>
     </footer>
